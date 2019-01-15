@@ -1,0 +1,12 @@
+# Ignore the folder __pychache__
+__pychache__/
+
+# Ignone the folder venv
+venv/
+
+# Ignore geckodrive.log
+geckodriver.log
+json_maker.py
+
+# Ignore all .pyc files
+*.pyc
