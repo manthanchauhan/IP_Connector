@@ -1,11 +1,13 @@
-{
-    "White Devil": {
-        "url": "http://192.168.1.1/redirect",
-        "passwordID": "password",
-        "loginName": "Login",
-        "gateway": "192.168.0.1",
-        "usernameID": "username",
-        "password": "mamta267",
-        "id": "ravi61"
-    }
-}
+//after first run, IP_Connector will autocreate this file with details 
+
+//{
+//     "SSID": {
+//         "url": "http://192.168.1.1/redirect",
+//         "passwordID": "password",
+//         "loginName": "Login",
+//         "gateway": "<your gateway>",
+//         "usernameID": "username",
+//         "password": "<your username>",
+//         "id": "<your password>"
+//     }
+// }
