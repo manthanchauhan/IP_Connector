@@ -8,6 +8,7 @@ venv/
 geckodriver.log
 json_maker.py
 details.json
+logout_details.txt
 
 # Ignore all .pyc files
 *.pyc
