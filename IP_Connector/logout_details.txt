@@ -1,0 +1,21 @@
+Network back at: 2019-01-15 12:03:58.041911
+Network back at: 2019-01-15 12:05:06.360059
+Network lost at: 2019-01-15 12:05:24.552162
+Reason: ISP down
+Network back at: 2019-01-15 12:05:37.539875
+Network lost at: 2019-01-15 12:06:43.874490
+Reason: ISP down
+Network back at: 2019-01-15 12:06:55.545806
+Network lost at: 2019-01-15 12:07:31.766865
+Reason: ISP down
+Network back at: 2019-01-15 12:07:43.106558
+Network lost at: 2019-01-15 12:08:02.192984
+Reason: ISP down
+Network back at: 2019-01-15 12:08:55.283582
+Network lost at: 2019-01-15 12:10:51.146702
+Reason: ISP down
+Network back at: 2019-01-15 12:13:19.430653
+Network back at: 2019-01-15 12:13:38.741752
+Network lost at: 2019-01-15 12:14:10.039336
+Reason: ISP down
+Network back at: 2019-01-15 12:15:28.243672
