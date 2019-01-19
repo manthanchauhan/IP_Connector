@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
+
 from IP_Connector import networkSupervisor
-from IP_Connector import ipCon
+from IP_Connector import ip_connector
 import os
+from IP_Connector.print_record import print_record
+
 
 if __name__ == '__main__':
-    try:
-        if os.stat('login_details.txt').st_size >= 1000000000:
-            os.remove('logout_details.txt')
-    except FileNotFoundError:
-        pass
-
-    ip_connector = ipCon.IpConnector(login_id='ravi61', password='mamta267')
-    autoCon = networkSupervisor.NetworkSupervisor(ip_connector)
-    autoCon.start_surveillance()
+    ip_connector = ip_connector.IpConnector()
+    print_record('created Ip connector\n')
+    supervisor = networkSupervisor.NetworkSupervisor(ip_connector)
+    print_record('starting surveillance\n')
+    supervisor.start_surveillance()
 
 
 

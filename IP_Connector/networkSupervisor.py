@@ -5,14 +5,14 @@ Auto connector class
 import time
 import os
 from datetime import datetime
-import sys
+from IP_Connector.print_record import print_record
 
 
 class NetworkSupervisor(object):
     def __init__(self, ip_connector, retry_sleep=1, recheck_sleep=1):
-        self.ip_connector = ip_connector
-        self.retry_sleep = retry_sleep
-        self.recheck_sleep = recheck_sleep
+        self._ip_connector = ip_connector
+        self._retry_sleep = retry_sleep
+        self._recheck_sleep = recheck_sleep
 
     def start_surveillance(self):
         internet_access = False
@@ -20,49 +20,37 @@ class NetworkSupervisor(object):
 
             if self.internet_available():
                 if not internet_access:
-                    f = open('logout_details.txt', 'a')
-                    sys.stdout = f
-                    print('Network back at: ' + str(datetime.now()))
-                    f.close()
+                    print_record('Network back at: ' + str(datetime.now()) + '\n')
                     internet_access = True
-                # print('connected')
-                time.sleep(self.recheck_sleep)
+                time.sleep(self._recheck_sleep)
 
             else:
+                time.sleep(1)
                 internet_access = False
-                f = open('logout_details.txt', 'a')
-                sys.stdout = f
-                print('Network lost at: ' + str(datetime.now()))
-                print('Reason: ', end='')
-                f.close()
+                print_record('Network lost at: ' + str(datetime.now()) + '\n')
+                print_record('Reason: ')
                 if not self.wifi_connected():
-                    reason = 'Wifi disconnected'
+                    print_record('Wifi disconnected\n')
 
                     while not self.wifi_connected():
                         # print('no wifi')
-                        time.sleep(self.retry_sleep)
+                        time.sleep(self._retry_sleep)
                     time.sleep(1)
 
                     if self.internet_available():
-                        f = open('logout_details.txt')
-                        sys.stdout = f
-                        f.close()
+                        print_record(reason + '\n')
                         continue
                     else:
                         # print('no internet')
-                        self.ip_connector.login()
-                else:
-                    reason = 'ISP down'
+                        self._ip_connector.login()
+                elif self.wifi_connected():
+                    print_record('ISP down\n')
                     # print('no internet')
-                    self.ip_connector.login()
-                f = open('logout_details.txt', 'a')
-                sys.stdout = f
-                print(reason)
-                f.close()
+                    self._ip_connector.login()
 
     @staticmethod
     def wifi_connected():
-        a = os.popen("ping -c 1 0 | grep -E -o '[^[:space:]]+ packet loss'").read()
+        a = os.popen("ping -c 1 192.168.0.102 | grep -E -o '[^[:space:]]+ packet loss'").read()
         # print(a)
         # print(self.connector.gateway)
         if a is '':

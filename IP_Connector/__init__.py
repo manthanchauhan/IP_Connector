@@ -1,4 +1,4 @@
 __all__ = [
     'networkSupervisor.py',
-    'ipCon'
+    'ip_connector.py'
 ]

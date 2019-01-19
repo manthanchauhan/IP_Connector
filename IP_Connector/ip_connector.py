@@ -9,59 +9,89 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import os
 import time
+import sys
 
 
 class IpConnector(object):
-    def __init__(self,
-                 login_id=None,
-                 password=None,
-                 connection_error_sleep=10
-                 ):
+
+    def __init__(self):
         self.ssid = self.get_ssid()
-        self.connection_error_sleep = connection_error_sleep
+        self._isp_wait = 10
+        self._login_id = None
+        self._password = None
+        self._driver = None
 
         try:
-            with open('details.json', 'r') as details:
-                data = json.load(details)
-                if self.ssid not in data.keys():
-                    raise FileNotFoundError
-                if login_id:
-                    self.id = login_id
-                else:
-                    self.id = data[self.ssid]['id']
-                if password:
-                    self.password = password
-                else:
-                    self.password = data[self.ssid]['password']
-                self.url = data[self.ssid]['url']
-                self.usernameID = data[self.ssid]['usernameID']
-                self.passwordID = data[self.ssid]['passwordID']
-                self.loginValue = data[self.ssid]['loginName']
-
+            self._load_details('details.json')
         except FileNotFoundError:
-            if any((login_id, password)) is None:
-                raise Exception('id or password not provided')
-            self.id = login_id
-            self.password = password
-            self.url = self.default_value('url')
-            self.usernameID = self.default_value('usernameID')
-            self.passwordID = self.default_value('passwordID')
-            self.loginValue = self.default_value('loginValue')
+            pass
+        self._open_record('logout_details.txt')
 
-        self.driver = None
+    def _load_details(self, file_name):
+        try:
+            with open(file_name, 'r') as details:
+                data = json.load(details)
+                self._login_id = data[self.ssid]['id']
+                self._password = data[self.ssid]['password']
+        except FileNotFoundError:
+            raise FileNotFoundError
+
+    @staticmethod
+    def _open_record(file_name):
+        try:
+            if os.stat(file_name).st_size >= 1000000000:
+                os.remove(file_name)
+                record = open(file_name, 'w')
+                record.close()
+        except FileNotFoundError:
+            record = open(file_name, 'w')
+            record.close()
+
+    @property
+    def isp_wait(self):
+        return self._isp_wait
+
+    @isp_wait.setter
+    def isp_wait(self, value):
+        if value < 0:
+            raise Exception('invalid time')
+        self._isp_wait = value
+
+    @property
+    def login_id(self):
+        raise Exception('cannot show login id (confidential)')
+
+    @login_id.setter
+    def login_id(self, value):
+        self._login_id = value
+
+    @property
+    def password(self):
+        raise Exception('cannot show password (confidential)')
+
+    @password.setter
+    def password(self, value):
+        self._password = value
 
     def login(self):
         try:
             if requests.get(self.url, verify=False, timeout=3).status_code is not requests.codes.ok:
                 raise Exception('error: ' + str(requests.get(self.url).raise_for_status()))
         except requests.exceptions.ConnectTimeout:
-            # print('Already logged in')
+            # with open('logout_details.txt', 'a') as record:
+            #     sys.stdout = record
+            #     print('Already logged in')
             return
         except requests.exceptions.ConnectionError:
-            time.sleep(self.connection_error_sleep)
+            # with open('logout_details.txt', 'a') as record:
+            #     sys.stdout = record
+            #     print('no response form ISP')
+            time.sleep(self.connection_wait)
             self.login()
             return
-
+        # with open('logout_details.txt', 'a') as record:
+        #     sys.stdout = record
+        #     print('opening web-page for login')
         self.driver = webdriver.Firefox()
         self.driver.get(self.url)
         username = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, self.usernameID)))
