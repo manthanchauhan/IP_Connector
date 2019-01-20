@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: IP-Connector
+Version: 0.0.2
+Summary: A small example package for automatic IP Connector
+Home-page: https://github.com/manthanchauhan/IP_Connector.git
+Author: Manthan Chauhan
+Author-email: manthanchauhan913@gmail.com
+License: UNKNOWN
+Description: automatic IP connector.
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent

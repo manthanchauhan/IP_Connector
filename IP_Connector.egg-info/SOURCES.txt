@@ -1,0 +1,12 @@
+setup.py
+IP_Connector/IpConnector.py
+IP_Connector/NetworkSupervisor.py
+IP_Connector/PrintRecord.py
+IP_Connector/__init__.py
+IP_Connector/json_maker.py
+IP_Connector.egg-info/PKG-INFO
+IP_Connector.egg-info/SOURCES.txt
+IP_Connector.egg-info/dependency_links.txt
+IP_Connector.egg-info/top_level.txt
+IP_Connector/automatic_email_sender/Sender.py
+IP_Connector/automatic_email_sender/__init__.py
