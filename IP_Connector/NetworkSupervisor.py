@@ -20,10 +20,29 @@ class NetworkSupervisor(object):
         self._reason = None
         self._down_time = None
         self._email = None
-        self._email_password = None
+        self._password = None
         self._sender = Sender(email=self._email,
-                              password=self._email_password,
+                              password=self._password,
                               message='email_message.txt')
+
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, new_email):
+        if not valid_email(new_email):
+            print('Invalid email')
+            return
+        self._email = new_email
+
+    @property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        self._password = value
 
     @property
     def user_email(self):

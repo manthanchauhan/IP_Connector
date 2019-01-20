@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="IP_Connector",
-    version="0.0.1",
+    version="0.0.2",
     author="Manthan Chauhan",
     author_email="manthanchauhan913@gmail.com",
     description="A small example package for automatic IP Connector",
