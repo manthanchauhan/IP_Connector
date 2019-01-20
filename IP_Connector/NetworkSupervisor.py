@@ -15,12 +15,14 @@ class NetworkSupervisor(object):
         self._ip_connector = ip_connector
         self._retry_wait = 3
         self._recheck_wait = 10
-        self._user_email = 'manthanchauhan913@gmail.com'
+        self._user_email = None
         self._user_name = 'Boss'
         self._reason = None
         self._down_time = None
-        self._sender = Sender(email='homeAutomation913@gmail.com',
-                              password='manthanLP@1309',
+        self._email = None
+        self._email_password = None
+        self._sender = Sender(email=self._email,
+                              password=self._email_password,
                               message='email_message.txt')
 
     @property
