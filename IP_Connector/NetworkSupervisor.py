@@ -5,7 +5,7 @@ Auto connector class
 import time
 import os
 from datetime import datetime
-from IP_Connector.print_record import print_record
+from IP_Connector.PrintRecord import print_record
 from IP_Connector.automatic_email_sender.Sender import Sender
 from IP_Connector.automatic_email_sender.Sender import valid_email
 
@@ -65,6 +65,8 @@ class NetworkSupervisor(object):
         self._retry_wait = value
 
     def start_surveillance(self):
+        print_record('==============================================================\n')
+        print_record('Starting network surveillance at ' + str(datetime.now()) + '\n')
         internet_access = True
         first_time_loss = None
         while True:

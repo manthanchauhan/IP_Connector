@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 import os
 import time
-from IP_Connector.print_record import print_record
+from IP_Connector.PrintRecord import print_record
 
 
 class IpConnector(object):

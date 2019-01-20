@@ -9,6 +9,7 @@ json_maker.py
 details.json
 logout_details.txt
 email_message.txt
+main.py
 
 # Ignore all .pyc files
 *.pyc
