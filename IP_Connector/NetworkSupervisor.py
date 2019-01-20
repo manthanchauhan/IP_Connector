@@ -21,9 +21,10 @@ class NetworkSupervisor(object):
         self._down_time = None
         self._email = None
         self._password = None
+        self.message = 'email_message.txt'
         self._sender = Sender(email=self._email,
                               password=self._password,
-                              message='email_message.txt')
+                              message=self.message)
 
     @property
     def email(self):
