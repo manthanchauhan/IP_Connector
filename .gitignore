@@ -4,11 +4,10 @@ __pychache__/
 # Ignone the folder venv
 venv/
 
-# Ignore geckodrive.log
 geckodriver.log
 json_maker.py
 details.json
-logout_details.txt
+IP_Connector/logout_details.txt
 email_message.txt
 
 # Ignore all .pyc files
