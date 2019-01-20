@@ -5,11 +5,11 @@ import json
 import requests
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 import os
 import time
-import sys
+from IP_Connector.print_record import print_record
 
 
 class IpConnector(object):
@@ -20,12 +20,14 @@ class IpConnector(object):
         self._login_id = None
         self._password = None
         self._driver = None
+        self._login_details = 'details.json'
+        self._record = 'logout_details.txt'
 
         try:
-            self._load_details('details.json')
+            self._load_details(self._login_details)
         except FileNotFoundError:
             pass
-        self._open_record('logout_details.txt')
+        self._open_record(self._record)
 
     def _load_details(self, file_name):
         try:
@@ -73,74 +75,72 @@ class IpConnector(object):
     def password(self, value):
         self._password = value
 
+    @property
+    def login_details(self):
+        return self._login_details
+
+    @login_details.setter
+    def login_details(self, path):
+        self._login_details = path
+
+    @property
+    def record(self):
+        return self._record
+
+    @record.setter
+    def record(self, path):
+        self._record = path
+
     def login(self):
+        redirect_url = 'http://192.168.1.1/redirect'
+
         try:
-            if requests.get(self.url, verify=False, timeout=3).status_code is not requests.codes.ok:
-                raise Exception('error: ' + str(requests.get(self.url).raise_for_status()))
+            request = requests.get(redirect_url, verify=False, timeout=3)
+            if request.status_code is not requests.codes.ok:
+                try:
+                    request.raise_for_status()
+                except requests.exceptions.HTTPError:
+                    print_record('Bad request \n')
+                    return
         except requests.exceptions.ConnectTimeout:
-            # with open('logout_details.txt', 'a') as record:
-            #     sys.stdout = record
-            #     print('Already logged in')
+            print_record('Already logged in \n')
             return
         except requests.exceptions.ConnectionError:
-            # with open('logout_details.txt', 'a') as record:
-            #     sys.stdout = record
-            #     print('no response form ISP')
-            time.sleep(self.connection_wait)
+            time.sleep(self.isp_wait)
             self.login()
             return
-        # with open('logout_details.txt', 'a') as record:
-        #     sys.stdout = record
-        #     print('opening web-page for login')
-        self.driver = webdriver.Firefox()
-        self.driver.get(self.url)
-        username = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, self.usernameID)))
-        username.send_keys(self.id)
-        password = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, self.passwordID)))
-        password.send_keys(self.password)
-        login_button = WebDriverWait(self.driver, 5). \
-            until(EC.presence_of_element_located((By.XPATH, '//button[contains(text(), "' + self.loginValue + '")]')))
-        login_button.click()
-        self.quit()
 
-    @staticmethod
-    def default_value(attrib):
-        if attrib is 'url':
-            return 'http://192.168.1.1/redirect'
-        elif attrib is 'usernameID':
-            return 'username'
-        elif attrib is 'passwordID':
-            return 'password'
-        elif attrib is 'loginValue':
-            return 'Login'
-        else:
-            raise Exception('invalid parameter')
+        self._driver = webdriver.Firefox()
+        self._driver.get(redirect_url)
+        username = WebDriverWait(self._driver, 3).until(ec.presence_of_element_located((By.ID, 'username')))
+        username.send_keys(self._login_id)
+        password = WebDriverWait(self._driver, 3).until(ec.presence_of_element_located((By.ID, 'password')))
+        password.send_keys(self._password)
+        login_button = WebDriverWait(self._driver, 3). \
+            until(ec.presence_of_element_located((By.XPATH, '//button[contains(text(), "Login")]')))
+        login_button.click()
+        self._quit()
 
     @staticmethod
     def get_ssid():
-        """
-        :return:
-        SSID of current wireless network
-        """
         ssid = os.popen('iwgetid -r').read()[:-1]
-        # print('SSID: ' + ssid)
         return ssid
 
-    def quit(self):
-        self.driver.quit()
-        if os.path.isfile('/home/manthan/PycharmProjects/IP_connector/details.json'):
-            return
-        else:
-            with open('/home/manthan/PycharmProjects/IP_connector/details.json', 'w') as file:
-                data = {
-                    'url': self.url,
-                    'usernameID': self.usernameID,
-                    'id': self.id,
-                    'passwordID': self.passwordID,
-                    'password': self.password,
-                    'loginName': self.loginValue,
-                }
-                data = {
-                    self.ssid: data
-                }
-                json.dump(data, file, indent=4)
+    def _quit(self):
+        self._driver.quit()
+
+        try:
+            details = open(self._login_details, 'r')
+            data = json.load(details)
+            details.close()
+        except FileNotFoundError:
+            data = None
+
+        with open(self._login_details, 'w') as details:
+            if not data:
+                data = {}
+            data[self.ssid] = {
+                'id': self._login_id,
+                'password': self._password,
+            }
+            json.dump(data, details, indent=4)

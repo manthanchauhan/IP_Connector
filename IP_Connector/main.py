@@ -2,7 +2,6 @@
 
 from IP_Connector import networkSupervisor
 from IP_Connector import ip_connector
-import os
 from IP_Connector.print_record import print_record
 
 

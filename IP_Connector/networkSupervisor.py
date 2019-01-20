@@ -6,53 +6,112 @@ import time
 import os
 from datetime import datetime
 from IP_Connector.print_record import print_record
+from IP_Connector.automatic_email_sender.Sender import Sender
+from IP_Connector.automatic_email_sender.Sender import valid_email
 
 
 class NetworkSupervisor(object):
-    def __init__(self, ip_connector, retry_sleep=1, recheck_sleep=1):
+    def __init__(self, ip_connector):
         self._ip_connector = ip_connector
-        self._retry_sleep = retry_sleep
-        self._recheck_sleep = recheck_sleep
+        self._retry_wait = 3
+        self._recheck_wait = 10
+        self._user_email = 'manthanchauhan913@gmail.com'
+        self._user_name = 'Boss'
+        self._reason = None
+        self._down_time = None
+        self._sender = Sender(email='homeAutomation913@gmail.com',
+                              password='manthanLP@1309',
+                              message='email_message.txt')
+
+    @property
+    def user_email(self):
+        return self._user_email
+
+    @user_email.setter
+    def user_email(self, email):
+        if not valid_email(email):
+            print('Not a valid email')
+            return
+        self._user_email = email
+
+    @property
+    def recheck_wait(self):
+        return self._recheck_wait
+
+    @recheck_wait.setter
+    def recheck_wait(self, value):
+        if value <= 0:
+            print('Invalid wait time')
+            return
+        self._recheck_wait = value
+
+    @property
+    def user_name(self):
+        return self._user_name
+
+    @user_name.setter
+    def user_name(self, name):
+        self._user_name = name
+
+    @property
+    def retry_wait(self):
+        return self._retry_wait
+
+    @retry_wait.setter
+    def retry_wait(self, value):
+        if value <= 0:
+            print('Invalid wait time')
+            return
+        self._retry_wait = value
 
     def start_surveillance(self):
-        internet_access = False
+        internet_access = True
+        first_time_loss = None
         while True:
 
             if self.internet_available():
                 if not internet_access:
+                    self._sender.send_mail(recipient=self._user_email,
+                                           subject='You network is back now',
+                                           message_details={'name': self._user_name,
+                                                            'reason': self._reason,
+                                                            'down_time': str(self._down_time)[:-7]})
                     print_record('Network back at: ' + str(datetime.now()) + '\n')
                     internet_access = True
-                time.sleep(self._recheck_sleep)
+                first_time_loss = True
+                time.sleep(self._recheck_wait)
 
             else:
-                time.sleep(1)
                 internet_access = False
-                print_record('Network lost at: ' + str(datetime.now()) + '\n')
+                self._down_time = datetime.now()
+                print_record('Network lost at: ' + str(self._down_time) + '\n')
                 print_record('Reason: ')
+                if first_time_loss:
+                    time.sleep(10)
+                first_time_loss = False
+
                 if not self.wifi_connected():
+                    self._reason = 'disconnected wifi'
                     print_record('Wifi disconnected\n')
 
                     while not self.wifi_connected():
-                        # print('no wifi')
-                        time.sleep(self._retry_sleep)
-                    time.sleep(1)
+                        time.sleep(self._retry_wait)
 
+                    time.sleep(2)
                     if self.internet_available():
-                        print_record(reason + '\n')
                         continue
                     else:
-                        # print('no internet')
                         self._ip_connector.login()
+
                 elif self.wifi_connected():
+                    self._reason = 'down ISP'
                     print_record('ISP down\n')
-                    # print('no internet')
                     self._ip_connector.login()
+                    time.sleep(self._retry_wait)
 
     @staticmethod
     def wifi_connected():
         a = os.popen("ping -c 1 192.168.0.102 | grep -E -o '[^[:space:]]+ packet loss'").read()
-        # print(a)
-        # print(self.connector.gateway)
         if a is '':
             return False
         else:
