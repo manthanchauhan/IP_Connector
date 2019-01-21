@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 from IP_Connector.PrintRecord import print_record
 from IP_Connector.automatic_email_sender.Sender import Sender
-from IP_Connector.automatic_email_sender.Sender import valid_email
+# from IP_Connector.automatic_email_sender.Sender import valid_email
 
 
 class NetworkSupervisor(object):
@@ -32,10 +32,13 @@ class NetworkSupervisor(object):
 
     @email.setter
     def email(self, new_email):
-        if not valid_email(new_email):
-            print('Invalid email')
-            return
+        # if not valid_email(new_email):
+        #     print('Invalid email')
+        #     return
         self._email = new_email
+        self._sender = Sender(email=self._email,
+                              password=self._password,
+                              message=self.message)
 
     @property
     def password(self):
@@ -44,6 +47,9 @@ class NetworkSupervisor(object):
     @password.setter
     def password(self, value):
         self._password = value
+        self._sender = Sender(email=self._email,
+                              password=self._password,
+                              message=self.message)
 
     @property
     def user_email(self):
@@ -51,9 +57,9 @@ class NetworkSupervisor(object):
 
     @user_email.setter
     def user_email(self, email):
-        if not valid_email(email):
-            print('Not a valid email')
-            return
+        # if not valid_email(email):
+        #     print('Not a valid email')
+        #     return
         self._user_email = email
 
     @property

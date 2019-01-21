@@ -43,11 +43,11 @@ class IpConnector(object):
         try:
             if os.stat(file_name).st_size >= 1000000000:
                 os.remove(file_name)
-                record = open(file_name, 'w')
-                record.close()
+                with open(file_name, "w"):
+                    pass
         except FileNotFoundError:
-            record = open(file_name, 'w')
-            record.close()
+            with open(file_name, "w"):
+                pass
 
     @property
     def isp_wait(self):
@@ -130,9 +130,8 @@ class IpConnector(object):
         self._driver.quit()
 
         try:
-            details = open(self._login_details, 'r')
-            data = json.load(details)
-            details.close()
+            with open(self._login_details, 'r') as details:
+                data = json.load(details)
         except FileNotFoundError:
             data = None
 
